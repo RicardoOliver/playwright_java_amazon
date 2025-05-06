@@ -25,7 +25,7 @@ jobs:
           cache: maven
       
       - name: Install Playwright browsers
-        run: mvn exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps"
+         mvn test "-Dbrowser.headless=false" "-Dbrowser.type=chromium" "-Dcucumber.filter.tags=@regressivos"
       
       - name: Run tests
         run: mvn clean test
