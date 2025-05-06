@@ -49,7 +49,7 @@ jobs:
         run: mvn exec:java -Dexec.mainClass="com.microsoft.playwright.CLI" -Dexec.args="install"
       
       - name: Verify Playwright installation
-        run: mvn exec:java -Dexec.mainClass="com.microsoft.playwright.CLI" -Dexec.args="version"
+        run: mvn exec:java -Dexec.mainClass="com.microsoft.playwright.CLI" -Dexec.args="install --dry-run"
       
       - name: Run tests
         run: mvn clean test -e -X -Dbrowser.headless=true -Dbrowser.type=chromium -Dcucumber.filter.tags=@regressivos
