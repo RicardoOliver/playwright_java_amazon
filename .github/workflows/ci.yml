@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ main, master ]
   schedule:
-    - cron: '0 0 * * *'  # Executa diariamente à meia-noite
+    - cron: '0 0 * * *'  # Runs daily at midnight
 
 jobs:
   test:
@@ -36,7 +36,7 @@ jobs:
       
       - name: Upload Allure Report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: allure-report
           path: target/allure-report
@@ -44,7 +44,7 @@ jobs:
       
       - name: Upload Cucumber Report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cucumber-report
           path: target/cucumber-reports
@@ -52,7 +52,7 @@ jobs:
       
       - name: Upload Screenshots
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: screenshots
           path: target/screenshots
@@ -60,8 +60,8 @@ jobs:
       
       - name: Upload Logs
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: logs
-          path: target/logs
+          path: target logs
           retention-days: 30
