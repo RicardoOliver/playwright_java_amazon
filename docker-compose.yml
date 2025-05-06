@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./target:/app/target
+    environment:
+      - browser.headless=true
+      - browser.type=chromium
+      - base.url=https://www.amazon.com.br
+      - acceptable.load.time.seconds=5.0
+    command: test

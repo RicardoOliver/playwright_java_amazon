@@ -1,0 +1,67 @@
+name: Amazon Test Automation
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    - cron: '0 0 * * *'  # Executa diariamente à meia-noite
+
+jobs:
+  test:
+    name: Run Automated Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: maven
+      
+      - name: Install Playwright browsers
+        run: mvn exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps"
+      
+      - name: Run tests
+        run: mvn clean test
+      
+      - name: Generate Allure Report
+        if: always()
+        run: mvn allure:report
+      
+      - name: Upload Allure Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-report
+          path: target/allure-report
+          retention-days: 30
+      
+      - name: Upload Cucumber Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: cucumber-report
+          path: target/cucumber-reports
+          retention-days: 30
+      
+      - name: Upload Screenshots
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: screenshots
+          path: target/screenshots
+          retention-days: 30
+      
+      - name: Upload Logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: logs
+          path: target/logs
+          retention-days: 30
