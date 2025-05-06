@@ -25,10 +25,10 @@ jobs:
           cache: maven
       
       - name: Install Playwright browsers
-         mvn test "-Dbrowser.headless=false" "-Dbrowser.type=chromium" "-Dcucumber.filter.tags=@regressivos"
+        run: mvn exec:java -Dexec.mainClass="com.microsoft.playwright.CLI" -Dexec.args="install"
       
       - name: Run tests
-        run: mvn clean test
+        run: mvn clean test -Dbrowser.headless=false -Dbrowser.type=chromium -Dcucumber.filter.tags=@regressivos
       
       - name: Generate Allure Report
         if: always()
@@ -63,5 +63,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: logs
-          path: target logs
+          path: target/logs
           retention-days: 30
