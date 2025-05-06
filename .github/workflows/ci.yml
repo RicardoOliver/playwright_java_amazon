@@ -24,11 +24,19 @@ jobs:
           distribution: 'temurin'
           cache: maven
       
+      - name: Install system dependencies for Playwright
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 libxi6 libxtst6 libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libgbm1 libasound2 libpango-1.0-0 libcairo2 libxrandr2
+      
       - name: Install Playwright browsers
         run: mvn exec:java -Dexec.mainClass="com.microsoft.playwright.CLI" -Dexec.args="install"
       
+      - name: Verify Playwright installation
+        run: mvn exec:java -Dexec.mainClass="com.microsoft.playwright.CLI" -Dexec.args="version"
+      
       - name: Run tests
-        run: mvn clean test -Dbrowser.headless=false -Dbrowser.type=chromium -Dcucumber.filter.tags=@regressivos
+        run: mvn clean test -e -X -Dbrowser.headless=true -Dbrowser.type=chromium -Dcucumber.filter.tags=@regressivos
       
       - name: Generate Allure Report
         if: always()
@@ -64,4 +72,12 @@ jobs:
         with:
           name: logs
           path: target/logs
+          retention-days: 30
+      
+      - name: Upload Surefire Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports
           retention-days: 30
