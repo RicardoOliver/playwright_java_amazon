@@ -51,7 +51,14 @@ jobs:
       - name: Verify Playwright installation
         run: mvn exec:java -Dexec.mainClass="com.microsoft.playwright.CLI" -Dexec.args="install --dry-run"
       
+      - name: Create empty Maven settings to avoid decryption warning
+        run: |
+          mkdir -p ~/.m2
+          echo "<settings></settings>" > ~/.m2/settings.xml
+      
       - name: Run tests
+        env:
+          PLAYWRIGHT_JAVA_LOGGING: true
         run: mvn clean test -e -X -Dbrowser.headless=true -Dbrowser.type=chromium -Dcucumber.filter.tags=@regressivos
       
       - name: Generate Allure Report
@@ -96,4 +103,12 @@ jobs:
         with:
           name: surefire-reports
           path: target/surefire-reports
+          retention-days: 30
+      
+      - name: Upload Maven Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maven-logs
+          path: target/surefire-reports/*.txt
           retention-days: 30
