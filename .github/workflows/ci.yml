@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ main, master ]
   schedule:
-    - cron: '0 0 * * *'  # Runs daily at midnight
+    - cron: '0 0 * * *'  # Executa diariamente à meia-noite
 
 jobs:
   test:
@@ -24,42 +24,11 @@ jobs:
           distribution: 'temurin'
           cache: maven
       
-      - name: Install system dependencies for Playwright
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libx11-xcb1 \
-            libxcomposite1 \
-            libxcursor1 \
-            libxdamage1 \
-            libxi6 \
-            libxtst6 \
-            libnss3 \
-            libatk1.0-0 \
-            libatk-bridge2.0-0 \
-            libcups2 \
-            libdrm2 \
-            libgbm1 \
-            libasound2t64 \
-            libpango-1.0-0 \
-            libcairo2 \
-            libxrandr2
-      
       - name: Install Playwright browsers
-        run: mvn exec:java -Dexec.mainClass="com.microsoft.playwright.CLI" -Dexec.args="install"
-      
-      - name: Verify Playwright installation
-        run: mvn exec:java -Dexec.mainClass="com.microsoft.playwright.CLI" -Dexec.args="install --dry-run"
-      
-      - name: Create empty Maven settings to avoid decryption warning
-        run: |
-          mkdir -p ~/.m2
-          echo "<settings></settings>" > ~/.m2/settings.xml
+        run: mvn exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps"
       
       - name: Run tests
-        env:
-          PLAYWRIGHT_JAVA_LOGGING: true
-        run: mvn clean test -e -X -Dbrowser.headless=true -Dbrowser.type=chromium -Dcucumber.filter.tags=@regressivos
+        run: mvn clean test
       
       - name: Generate Allure Report
         if: always()
@@ -67,7 +36,7 @@ jobs:
       
       - name: Upload Allure Report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: allure-report
           path: target/allure-report
@@ -75,7 +44,7 @@ jobs:
       
       - name: Upload Cucumber Report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: cucumber-report
           path: target/cucumber-reports
@@ -83,7 +52,7 @@ jobs:
       
       - name: Upload Screenshots
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: screenshots
           path: target/screenshots
@@ -91,24 +60,8 @@ jobs:
       
       - name: Upload Logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: logs
           path: target/logs
-          retention-days: 30
-      
-      - name: Upload Surefire Reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: surefire-reports
-          path: target/surefire-reports
-          retention-days: 30
-      
-      - name: Upload Maven Logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: maven-logs
-          path: target/surefire-reports/*.txt
           retention-days: 30
