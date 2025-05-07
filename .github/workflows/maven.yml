@@ -54,7 +54,6 @@ jobs:
           libxi6 \
           libxtst6 \
           libglib2.0-0 \
-          libasound2t64 \
           libpulse0 \
           libsoup2.4-1 \
           libopus0 \
