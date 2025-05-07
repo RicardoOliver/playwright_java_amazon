@@ -61,19 +61,25 @@ jobs:
           libsecret-1-0 \
           libgles2
 
+    - name: Verify Playwright Dependencies
+      run: |
+        ldd $(find /usr/lib -name "libgtk-3.so.0") || echo "Dependency check failed"
+        playwright --version
+
     - name: Build with Maven
       run: mvn -B package --file pom.xml -DskipTests
 
     - name: Install Playwright Browsers
       run: |
+        rm -rf ~/.cache/playwright
         mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install chromium"
 
     - name: Run Tests (headless with xvfb)
-      run: xvfb-run --auto-servernum mvn test
+      run: xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24" mvn test -e -X
 
     - name: Generate Allure Report
       if: always()
-      run: mvn allure:report
+      run: mvn allure:report -e -X
 
     - name: Upload Test Results
       if: always()
@@ -82,7 +88,8 @@ jobs:
         name: test-results
         path: |
           target/surefire-reports/
-          target/site/allure-maven-plugin/
+          target/allure-results/
+          target/allure-report/
           playwright-report/
           test-results/
         retention-days: 7
