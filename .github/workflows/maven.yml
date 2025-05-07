@@ -58,7 +58,6 @@ jobs:
           libasound2-dev \
           libpulse0 \
           libsoup2.4-1 \
-          libvpx7 \
           libopus0 \
           libwebp7 \
           libenchant-2-2 \
@@ -82,7 +81,7 @@ jobs:
       
     - name: Upload Test Results
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: test-results
         path: |
